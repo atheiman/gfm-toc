@@ -1,6 +1,6 @@
 # Header above TOC (ignored)
 
-%TOC:3%
+%TOC%
 
 # Header level 1
 
