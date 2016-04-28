@@ -72,6 +72,9 @@ headers.each_with_index do |h,i|
   # make the anchor more anchor-looking
   anchor = h[:header_text].gsub(/[^a-zA-Z0-9-]/, '').downcase
 
+  # backslashes are the worst, they cannot be the last character of a GFM link text
+  h[:header_text].gsub!(/\\$/, '')
+
   # indent the bullet based on the header depth (depth 1: '', depth 2: '  ', depth 3: '    ')
   indent = (' ' * h[:depth] * 2)[0...-2]
 
@@ -87,9 +90,6 @@ headers.each_with_index do |h,i|
   # append newline for next bullet (unless last bullet)
   toc_md << "\n" unless i == headers.length - 1
 end
-
-# backslashes are the worst
-toc_md.gsub!('\\') { '\\\\\\\\' }
 
 # update the markdown with the toc
 output_text = input_text.gsub(toc_regex, toc_md)
