@@ -1,4 +1,4 @@
-# gfm-toc.rb
+# gfm-toc
 
 Generates a markdown formatted table of contents from GitHub flavored markdown files.
 
