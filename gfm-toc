@@ -70,7 +70,7 @@ anchors = []
 
 headers.each_with_index do |h,i|
   # make the anchor more anchor-looking
-  anchor = h[:header_text].gsub(/[\W_]/, '-').downcase
+  anchor = h[:header_text].gsub(/[\W_]/, '').downcase
 
   # indent the bullet based on the header depth (depth 1: '', depth 2: '  ', depth 3: '    ')
   indent = (' ' * h[:depth] * 2)[0...-2]
