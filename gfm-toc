@@ -73,7 +73,8 @@ headers.each_with_index do |h,i|
   anchor = h[:header_text].gsub(/[^a-zA-Z0-9-]/, '').downcase
 
   # backslashes are the worst, they cannot be the last character of a GFM link text
-  h[:header_text].gsub!(/\\$/, '')
+  # https://gist.github.com/atheiman/a6bd1ad91efa6b7e3aede48086b79b92
+  h[:header_text].gsub!(/\\$/, '&#92;')
 
   # indent the bullet based on the header depth (depth 1: '', depth 2: '  ', depth 3: '    ')
   indent = (' ' * h[:depth] * 2)[0...-2]
