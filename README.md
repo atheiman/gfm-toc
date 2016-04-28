@@ -24,14 +24,3 @@ See [INPUT.md](https://raw.githubusercontent.com/atheiman/gfm-toc/master/INPUT.m
 Run the utility with the `-h`,`--help` option to see the full option list.
 
 [It should work with any crazy header you can come up with.](./.crazy-headers.md)
-
-# Outstanding Features
-
-- Allow specifying the max header depth to be included in the generated table of contents by passing a parameter: `%TOC:2%` will only inlude headers identified with `#` and `##`
-
-- Allow utility to be run on the same file consecutively to get the same result (i.e. update a file and run the utility again to update the generated TOC)
-  Probably want to just wrap the generated TOC with a comment that say `START_TOC` and `END_TOC`, then just update the contents between the comments every time the utility is run.
-
-- Run utility on a directory, matching any `.md`, `.mdown`, and `.markdown` files
-
-- If `%TOC%` is not in the file, the generated TOC should just be printed to stdout
