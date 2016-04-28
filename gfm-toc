@@ -88,6 +88,9 @@ headers.each_with_index do |h,i|
   toc_md << "\n" unless i == headers.length - 1
 end
 
+# backslashes are the worst
+toc_md.gsub!('\\') { '\\\\\\\\' }
+
 # update the markdown with the toc
 output_text = input_text.gsub(toc_regex, toc_md)
 
