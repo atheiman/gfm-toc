@@ -4,4 +4,4 @@ Generates a markdown formatted table of contents from GitHub flavored markdown f
 
 # Usage
 
-See [INPUT.md](./INPUT.md) and [OUTPUT.md](./OUTPUT.md) for a thorough example.
+See [INPUT.md](https://raw.githubusercontent.com/atheiman/gfm-toc/master/INPUT.md) and [OUTPUT.md](./OUTPUT.md) for a thorough example.
