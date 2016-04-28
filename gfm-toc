@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+options = {
+  max_header_depth: 3,
+  toc_regex_string: '^%TOC(:([\d]+))?%$',
+  stdout: false,
+  dry_run: false,
+}
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{__FILE__} FILE [options]"
+
+  opts.on( '-d', '--max-header-depth INT', Integer,
+           "Set the default max header depth (default: #{options[:max_header_depth]})") do |d|
+    options[:max_header_depth] = d
+  end
+
+  opts.on( '-r', '--toc-regex STRING', String,
+           "TOC regex to be matched (default: '#{options[:toc_regex_string]}'')") do |s|
+    options[:toc_regex_string] = s
+  end
+
+  opts.on('-s', '--stdout',
+          "Print the generated TOC to stdout") do
+    options[:stdout] = true
+  end
+
+  opts.on('-x', '--dry-run', 'Don\'t update file with TOC') do
+    options[:dry_run] = true
+  end
+
+  opts.on('-h', '--help', 'Print this help') do
+    puts opts
+    exit
+  end
+
+  if ARGV.empty?
+    STDERR.puts 'ERROR: No file provided'
+    STDERR.puts opts
+    exit 1
+  end
+end.parse!
+
+toc_regex = Regexp.new options[:toc_regex_string]
+
+# get the markdown input
+file = ARGV[0]
+input_text = File.read(file)
+
+# find the headers in the markdown input
+toc_found = false
+headers = []
+input_text.lines.each do |text|
+  # only link to headers below the TOC
+  toc_found = text =~ toc_regex unless toc_found
+  # TODO: update the max header depth based on the %TOC:\d% match
+  next unless toc_found
+  match = /^(?<depth>\#{1,#{options[:max_header_depth]}})[[:space:]]+(?<header_text>.*)/.match(text)
+  next unless match
+  headers << {depth: match['depth'].length, header_text: match['header_text']}
+end
+
+# error if toc not matched in file
+raise "TOC regex #{toc_regex.inspect} not matched in #{file}" unless toc_found
+
+# generate the toc markdown
+toc_md = ''
+anchors = []
+
+headers.each_with_index do |h,i|
+  # make the anchor more anchor-looking
+  anchor = h[:header_text].gsub(/\W/, '-').downcase
+
+  # indent the bullet based on the header depth (depth 1: '', depth 2: '  ', depth 3: '    ')
+  indent = (' ' * h[:depth] * 2)[0...-2]
+
+  # append a number if the same header text has already been used
+  count = 0
+  anchors.each { |a| count += 1 if a == anchor }
+  anchors << anchor
+  anchor << "-#{count}" if count > 0
+
+  # append the bullet to the toc text
+  toc_md << "#{indent}- [#{h[:header_text]}](##{anchor})"
+
+  # append newline for next bullet (unless last bullet)
+  toc_md << "\n" unless i == headers.length - 1
+end
+
+# update the markdown with the toc
+output_text = input_text.gsub(toc_regex, toc_md)
+
+if options[:stdout]
+  STDERR.puts "Generated TOC for #{file}:"
+  puts toc_md
+end
+
+unless options[:dry_run]
+  File.open(file, 'w').write output_text
+  STDERR.puts "Updated TOC in #{file}"
+end
